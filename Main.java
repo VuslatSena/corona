@@ -18,39 +18,6 @@ public class Main{
     private static File[] filesArr = provinceDirectory.listFiles();
     
     /**
-     *  
-     * @param fileName 20200101
-     * @return 2020-01-01
-     */
-    public static String buildDateFileName(String fileName){
-        int firstIndex = 4;
-        
-        //System.out.println("string received: "+fileName);
-        String regex = "-";
-        String[] tempArr = fileName.split(regex);
-        String data = tempArr[4];
-        //System.out.println("Data: "+data);
-        int pointIndex = data.indexOf(".");
-        String firstSubString = "", secondSubString = "";
-        String miniString_1 = "", miniString_2 = "";
-
-        firstSubString = data.substring(0, firstIndex);
-        //System.out.println("-firstSubString: "+firstSubString);
-        secondSubString = data.substring(firstIndex, pointIndex);
-        //System.out.println("-secondSubString: "+secondSubString);
-        miniString_1 = secondSubString.substring(0, 2);
-        miniString_2 = secondSubString.substring(2, secondSubString.length());
-        
-        firstSubString = firstSubString.concat(regex);
-        secondSubString = secondSubString.concat(regex);
-        miniString_1 = miniString_1.concat(regex);
-
-        data = firstSubString+miniString_1+miniString_2;
-        //System.out.println("string returned: "+data);
-        return data;
-    }
-
-    /**
      * 
      * @param date 2020-01-01
      * @return LocalDate 2020-01-01
@@ -71,36 +38,79 @@ public class Main{
         temp.setCodiceRegione(codRegione);
         String nomeRegione = tempArray[3];
         temp.setNomeRegione(nomeRegione);
+        //System.out.println("NomeRegione: "+nomeRegione);
         int codiceProvincia = Integer.parseInt(tempArray[4]);
         temp.setCodiceProvincia(codiceProvincia);
         String nomeProvincia = tempArray[5];
         temp.setNomeProvinia(nomeProvincia);
+        System.out.println("nome provincia : "+nomeProvincia);
         String siglaProvincia = tempArray[6];
         temp.setSiglaProvincia(siglaProvincia);
         int totaleCasi = Integer.parseInt(tempArray[9]);
         temp.setTotaleCasi(totaleCasi);
+        System.out.println("totale casi :"+totaleCasi);
         
         return temp;
     }
+
+    public static ArrayList<String> regionReader(String fileName, String nameOfRegion) throws FileNotFoundException{
+        ArrayList<String> regioneList = new ArrayList<String>();
+        FileHandler fHandler = new FileHandler();
+        File f = new File(fHandler.buildFilePath(fileName));
+        String regex = ",";
+        String str = "";
+        String sArrRegione = "";
+        try{
+            String[] arrayToCheck = fHandler.readFile(f);
+            for(int i = 0; i < arrayToCheck.length-1; i++){
+                str = arrayToCheck[i];
+                if(str != null){
+                    String sArr[] = new String[arrayToCheck.length];
+                    sArr = str.split(regex);
+                    sArrRegione = sArr[3];
+                    //System.out.println("sArrRegione: "+sArrRegione);
+                    if(sArrRegione.equals(nameOfRegion))
+                        regioneList.add(str);
+                }else{
+                    System.out.println("numero riga: "+i);
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }catch(NullPointerException e){
+            System.out.println("Ultima stringa letta: "+str);
+            System.out.println("Leggevo Questo file: "+f.getName());
+            e.printStackTrace();
+        }
+        return regioneList;
+    }
+
 
     public static void main(String[] args) throws FileNotFoundException{
         System.out.println("file names in: [" +provinceDirectory.toString()+"]");
         FileHandler fHandler = new FileHandler();
         ArrayList<File> fList = fHandler.getFileList();
+        ArrayList<Node> nList = new ArrayList<Node>();
         String[] strLette = new String[1024];
         Tree t = new Tree();
         try{
-            strLette = fHandler.readFile(fList.get(1));
+            File prova = fList.get(1);
+            LocalDate dateOfProva = buildDate(fHandler.buildStringDate(prova.getName()));
+            t.insert(dateOfProva);
+            Node temp = t.get(dateOfProva);
+            //nList.add(temp);
+            ArrayList<String> regioneList = regionReader(prova.getName(), "Lombardia");
+            for(String s : regioneList){
+                temp = buildNode(temp, s);
+                
+            }
+              
         }
         catch(IOException e){
             e.printStackTrace();
         }
+        t.traverseInOrder();
         
-        for(int i = 0; i < strLette.length; i++){
-            String str = strLette[i];
-            if(str != null)
-                System.out.println(i+": "+str);
-        }
     }
 
 }

@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
 public class FileHandler {
 
     private String fileFormat = ".*\\.csv";
-    private String provinceDirectory = "/Users/mattiamac/Documents/coronaVisualiser/dati";
+    private String provinceDirectory = "/Users/mattiamac/Documents/GitHub/coronaVisualiser/dati/";
     private File fileDirectory;
     private ArrayList<String> fileNames;
     private ArrayList<File> files;
@@ -68,8 +68,7 @@ public class FileHandler {
     }
 
     public String[] readFile(File f) throws IOException{
-        
-        String[] righeLette = new String[1024];
+        String[] righeLette = new String[115];
         try{
             removeFirstLine(f.getName());
             File file = getFile(f.getName());
@@ -125,7 +124,7 @@ public class FileHandler {
      * @param fileName 20200101
      * @return 2020-01-01
      */
-    public static String buildStringDate(String fileName) {
+    public String buildStringDate(String fileName) {
         int firstIndex = 4;
         
         String regex = "-";

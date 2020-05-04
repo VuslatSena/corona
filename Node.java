@@ -22,6 +22,17 @@ public class Node{
         this.dataNodo = dataNodo;
     }
 
+    public Node(LocalDate dataNodo, String nomeRegione){
+        this.dataNodo = dataNodo;
+        this.nomeRegione = nomeRegione;
+    }
+
+    public Node(LocalDate dataNodo, String nomeRegione, String nomeProvincia){
+        this.dataNodo = dataNodo;
+        this.nomeRegione = nomeRegione;
+        this.nomeProvincia = nomeProvincia;
+    }
+
     public Node get(LocalDate dataNodo){
         if(this.dataNodo == dataNodo)
             return this;
@@ -34,6 +45,44 @@ public class Node{
         }
         return null;
     }
+
+    public Node get(LocalDate dataNodo, String nomeRegione){
+        if(this.dataNodo == dataNodo){
+            if(this.nomeRegione == nomeRegione)
+                return this;
+            else if(this.nomeRegione != nomeRegione)
+                return get(dataNodo, nomeRegione);
+        }
+        if(this.dataNodo.isBefore(dataNodo)){
+            if(leftNode != null)
+                return leftNode.get(dataNodo);
+        }
+        else{
+            if(rightNode != null)
+                return rightNode.get(dataNodo);
+        }
+        return null;
+    }
+
+    public Node get(LocalDate dataNodo, String nomeRegione, String nomeProvincia){
+        if(this.dataNodo == dataNodo){
+            if(this.nomeRegione == nomeRegione)
+                if(this.nomeProvincia == nomeProvincia)
+                    return this;
+            else if(this.nomeRegione != nomeRegione || this.nomeProvincia != nomeProvincia)
+                return get(dataNodo, nomeRegione, nomeProvincia);
+        }
+        if(this.dataNodo.isBefore(dataNodo)){
+            if(leftNode != null)
+                return leftNode.get(dataNodo);
+        }
+        else{
+            if(rightNode != null)
+                return rightNode.get(dataNodo);
+        }
+        return null;
+    }
+
 
     public void insert(LocalDate dataNodo){
         if(this.dataNodo == dataNodo)
@@ -56,11 +105,11 @@ public class Node{
     public void traverseInOrder(){
         if(leftNode != null)
             leftNode.traverseInOrder();
-        System.out.println(dataNodo.toString()+", ");
+        System.out.println(dataNodo.toString()+", "+"Regione: "+this.nomeRegione+"Provincia: "+this.getNomeProvincia()
+                +"totale casi: "+this.getTotaleCasi());
         if(rightNode != null)
             rightNode.traverseInOrder();
     }
-
 
     public Node getLeftNode(){
         return this.leftNode;
@@ -93,8 +142,6 @@ public class Node{
     public void setStato(String stato){
         this.stato = stato;
     }
-
-    
 
     public LocalDate getDataNodo(){
         return this.dataNodo;
