@@ -85,11 +85,27 @@ public class Main{
         return regioneList;
     }
 
-    public String provinceReader(String fileName, String nameOfRegion){
+    public String provinceReader(String fileName, String nomeOfProvince) throws FileNotFoundException{
         String provinceFound = "";
-
-
-
+        try{
+            FileHandler fHandler = new FileHandler();
+            File f = new File(fHandler.buildFilePath(fileName));
+            String regex = ",";
+            String str = "";
+            String[] arrayToCheck = fHandler.readFile(f);
+            for(int i = 0; i < arrayToCheck.length-1; i++){
+                str = arrayToCheck[i];
+                if(str != null){
+                    String[] strArr = new String[10];
+                    strArr = str.split(regex);
+                    provinceFound = strArr[5];
+                    if(provinceFound.equals(nomeOfProvince))
+                        return provinceFound;
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
         return null;
     }
 
