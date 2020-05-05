@@ -85,6 +85,14 @@ public class Main{
         return regioneList;
     }
 
+    public String provinceReader(String fileName, String nameOfRegion){
+        String provinceFound = "";
+
+
+
+        return null;
+    }
+
 
     public static void main(String[] args) throws FileNotFoundException{
         System.out.println("file names in: [" +provinceDirectory.toString()+"]");
