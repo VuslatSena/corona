@@ -163,7 +163,7 @@ public class Node{
         return this.nomeProvincia;
     }
 
-    public void setNomeProvinia(String nomeProvincia){
+    public void setNomeProvincia(String nomeProvincia){
         this.nomeProvincia = nomeProvincia;
     }
 

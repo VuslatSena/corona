@@ -42,7 +42,7 @@ public class Main{
         int codiceProvincia = Integer.parseInt(tempArray[4]);
         temp.setCodiceProvincia(codiceProvincia);
         String nomeProvincia = tempArray[5];
-        temp.setNomeProvinia(nomeProvincia);
+        temp.setNomeProvincia(nomeProvincia);
         System.out.println("nome provincia : "+nomeProvincia);
         String siglaProvincia = tempArray[6];
         temp.setSiglaProvincia(siglaProvincia);
@@ -53,13 +53,12 @@ public class Main{
         return temp;
     }
 
-    public static ArrayList<String> regionReader(String fileName, String nameOfRegion) throws FileNotFoundException{
-        ArrayList<String> regioneList = new ArrayList<String>();
+    public static String regionReader(String fileName, String nameOfRegion) throws FileNotFoundException{
+        String regionFound = "";
         FileHandler fHandler = new FileHandler();
         File f = new File(fHandler.buildFilePath(fileName));
         String regex = ",";
         String str = "";
-        String sArrRegione = "";
         try{
             String[] arrayToCheck = fHandler.readFile(f);
             for(int i = 0; i < arrayToCheck.length-1; i++){
@@ -67,10 +66,10 @@ public class Main{
                 if(str != null){
                     String sArr[] = new String[arrayToCheck.length];
                     sArr = str.split(regex);
-                    sArrRegione = sArr[3];
+                    regionFound = sArr[3];
                     //System.out.println("sArrRegione: "+sArrRegione);
-                    if(sArrRegione.equals(nameOfRegion))
-                        regioneList.add(str);
+                    if(regionFound.equals(nameOfRegion))
+                        return regionFound;
                 }else{
                     System.out.println("numero riga: "+i);
                 }
@@ -82,10 +81,10 @@ public class Main{
             System.out.println("Leggevo Questo file: "+f.getName());
             e.printStackTrace();
         }
-        return regioneList;
+        return null;
     }
 
-    public String provinceReader(String fileName, String nomeOfProvince) throws FileNotFoundException{
+    public static String provinceFinder(String fileName, String nomeOfProvince) throws FileNotFoundException{
         String provinceFound = "";
         try{
             FileHandler fHandler = new FileHandler();
@@ -109,6 +108,31 @@ public class Main{
         return null;
     }
 
+    public static int casiFinder(String fileName, String regione, String province){
+        int totaleCasi = 0;
+        try{
+            FileHandler fHandler = new FileHandler();
+            File f = new File(fHandler.buildFilePath(fileName));
+            String regex = ",";
+            String str = "";
+            String[] arrayToCheck = fHandler.readFile(f);
+            for(int i = 0; i < arrayToCheck.length-1; i++){
+                str = arrayToCheck[i];
+                if(str != null){
+                    String[] strArr = new String[10];
+                    strArr = str.split(regex);
+                    String strRegione = strArr[3];
+                    String strProvincia = strArr[5];
+                    if(strRegione.equals(regione) && strProvincia.equals(province))
+                        totaleCasi = Integer.parseInt(strArr[9]);
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return totaleCasi;
+    }
+
 
     public static void main(String[] args) throws FileNotFoundException{
         System.out.println("file names in: [" +provinceDirectory.toString()+"]");
@@ -123,18 +147,16 @@ public class Main{
             t.insert(dateOfProva);
             Node temp = t.get(dateOfProva);
             //nList.add(temp);
-            ArrayList<String> regioneList = regionReader(prova.getName(), "Lombardia");
-            for(String s : regioneList){
-                temp = buildNode(temp, s);
-                
-            }
-              
+            String regione = regionReader(prova.getName(), "Lombardia");
+            String province = provinceFinder(prova.getName(), "Varese");
+            int totaleCasi = casiFinder(prova.getName(), regione, province);
+            temp.setNomeRegione(regione);
+            temp.setNomeProvincia(province);
+            temp.setTotaleCasi(totaleCasi);
         }
         catch(IOException e){
             e.printStackTrace();
         }
         t.traverseInOrder();
-        
     }
-
 }
