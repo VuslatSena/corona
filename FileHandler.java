@@ -4,22 +4,25 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.RandomAccessFile;
+import java.util.Stack;
+
 public class FileHandler {
 
     private String fileFormat = ".*\\.csv";
     private String provinceDirectory = "/Users/mattiamac/Documents/GitHub/coronaVisualiser/dati/";
     private File fileDirectory;
     private ArrayList<String> fileNames;
-    private ArrayList<File> files;
+    //private ArrayList<File> files;
+    private Stack<File> filesStack;
+
     private File f;
 
     public FileHandler() throws FileNotFoundException{
         fileNames = new ArrayList<String>();
-        files = new ArrayList<File>();
+        //files = new ArrayList<File>();
+        filesStack = new Stack<File>();
         fileDirectory = new File(provinceDirectory);
-        addToFileList();
+        addToFileStack();
         search();
     }
 
@@ -27,12 +30,16 @@ public class FileHandler {
         return this.fileNames;
     }
 
-    public ArrayList<File> getFileList(){
+    /* public ArrayList<File> getFileList(){
         return this.files;
+    } */
+
+    public Stack<File> getFileStack(){
+        return this.filesStack;
     }
 
     public void search(){
-        for(File f : files){
+        for(File f : filesStack){
             if(f.isDirectory())
                 search();
             if(f.isFile()){     
@@ -45,18 +52,18 @@ public class FileHandler {
         }
     } 
 
-    public void addToFileList(){
+    public void addToFileStack(){
         File[] fileList = fileDirectory.listFiles();
         for(File f : fileList){
-            if(!(files.contains(f)))
+            if(!(filesStack.contains(f)))
                 if(f.isFile())
-                    files.add(f);
+                    filesStack.add(f);
         }
     }
 
     public File getFile(String fileName){
         System.out.println("file name: "+fileName);
-        for(File temp : files){
+        for(File temp : filesStack){
             if(temp.getName() != null && temp.getName().contains(fileName)) 
                 return temp;       
         }   
@@ -67,8 +74,8 @@ public class FileHandler {
         return f.getName();
     }
 
-    public String[] readFile(File f) throws IOException{
-        String[] righeLette = new String[115];
+    public ArrayList<String> readFile(File f) throws IOException{
+        ArrayList<String> righeLette = new ArrayList<String>();
         try{
             removeFirstLine(f.getName());
             File file = getFile(f.getName());
@@ -77,7 +84,7 @@ public class FileHandler {
             int i = 0;
             while(sc.hasNextLine()){
                 strLetta = sc.nextLine();
-                righeLette[i] = strLetta;
+                righeLette.add(strLetta);
                 i++;
             }
             sc.close();
@@ -89,7 +96,7 @@ public class FileHandler {
         }/* catch(IOException e){
             e.printStackTrace();
         } */
-        return righeLette;
+        return  righeLette;
     }
     
     public void removeFirstLine(String fileName){

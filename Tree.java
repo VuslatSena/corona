@@ -19,6 +19,12 @@ public class Tree {
             rootNode.traverseInOrder();
     }
 
+    /* public Node getNextNode(){
+        if(rootNode != null)
+            return rootNode;
+        return getNextNode();
+    } */
+
     /**
      * 
      * finds a node using a certain date

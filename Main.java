@@ -4,8 +4,7 @@ import java.util.Scanner;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.io.IOException;
-
-
+import java.util.Stack;
 
 public class Main{
 
@@ -28,31 +27,6 @@ public class Main{
         return dataFile;
     }
 
-    public static Node buildNode(Node temp, String data){
-        String regex = ",";
-        System.out.println("Saving data into Node: "+temp.getDataNodo());
-        String[] tempArray = data.split(regex);
-        String stato = tempArray[1];
-        temp.setStato(stato);
-        int codRegione = Integer.parseInt(tempArray[2]);
-        temp.setCodiceRegione(codRegione);
-        String nomeRegione = tempArray[3];
-        temp.setNomeRegione(nomeRegione);
-        //System.out.println("NomeRegione: "+nomeRegione);
-        int codiceProvincia = Integer.parseInt(tempArray[4]);
-        temp.setCodiceProvincia(codiceProvincia);
-        String nomeProvincia = tempArray[5];
-        temp.setNomeProvincia(nomeProvincia);
-        System.out.println("nome provincia : "+nomeProvincia);
-        String siglaProvincia = tempArray[6];
-        temp.setSiglaProvincia(siglaProvincia);
-        int totaleCasi = Integer.parseInt(tempArray[9]);
-        temp.setTotaleCasi(totaleCasi);
-        System.out.println("totale casi :"+totaleCasi);
-        
-        return temp;
-    }
-
     public static String regionReader(String fileName, String nameOfRegion) throws FileNotFoundException{
         String regionFound = "";
         FileHandler fHandler = new FileHandler();
@@ -60,20 +34,30 @@ public class Main{
         String regex = ",";
         String str = "";
         try{
-            String[] arrayToCheck = fHandler.readFile(f);
-            for(int i = 0; i < arrayToCheck.length-1; i++){
+            ArrayList<String> arrayToCheck = fHandler.readFile(f);
+            for(String strToCheck : arrayToCheck){
+                if(strToCheck != null){
+                    String[] sArr = new String[12];
+                    sArr = strToCheck.split(regex);
+                    regionFound = sArr[3];
+                    if(regionFound.equals(nameOfRegion))
+                        return regionFound;
+                }
+            }
+            /* for(int i = 0; i < arrayToCheck.length-1; i++){
                 str = arrayToCheck[i];
                 if(str != null){
                     String sArr[] = new String[arrayToCheck.length];
                     sArr = str.split(regex);
                     regionFound = sArr[3];
+                    //System.out.println(regionFound);
                     //System.out.println("sArrRegione: "+sArrRegione);
                     if(regionFound.equals(nameOfRegion))
                         return regionFound;
                 }else{
                     System.out.println("numero riga: "+i);
                 }
-            }
+            } */
         }catch(IOException e){
             e.printStackTrace();
         }catch(NullPointerException e){
@@ -91,8 +75,17 @@ public class Main{
             File f = new File(fHandler.buildFilePath(fileName));
             String regex = ",";
             String str = "";
-            String[] arrayToCheck = fHandler.readFile(f);
-            for(int i = 0; i < arrayToCheck.length-1; i++){
+            ArrayList<String> arrayToCheck = fHandler.readFile(f);
+            for(String strToCheck : arrayToCheck){
+                if(strToCheck != null){
+                    String[] sArr = new String[12];
+                    sArr = strToCheck.split(regex);
+                    provinceFound = sArr[5];
+                    if(provinceFound.equals(nomeOfProvince))
+                        return provinceFound;
+                    }
+            }
+            /* for(int i = 0; i < arrayToCheck.length-1; i++){
                 str = arrayToCheck[i];
                 if(str != null){
                     String[] strArr = new String[10];
@@ -101,7 +94,7 @@ public class Main{
                     if(provinceFound.equals(nomeOfProvince))
                         return provinceFound;
                 }
-            }
+            } */
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -115,8 +108,18 @@ public class Main{
             File f = new File(fHandler.buildFilePath(fileName));
             String regex = ",";
             String str = "";
-            String[] arrayToCheck = fHandler.readFile(f);
-            for(int i = 0; i < arrayToCheck.length-1; i++){
+            ArrayList<String> arrayToCheck = fHandler.readFile(f);
+            for(String strToCheck : arrayToCheck){
+                if(strToCheck != null){
+                    String[] sArr = new String[12];
+                    sArr = strToCheck.split(regex);
+                    String regioneFound = sArr[3];
+                    String provinciaFound = sArr[5];
+                    if(regioneFound.equals(regione) && provinciaFound.equals(province))
+                        totaleCasi = Integer.parseInt(sArr[9]);
+                }
+            }
+            /* for(int i = 0; i < arrayToCheck.length-1; i++){
                 str = arrayToCheck[i];
                 if(str != null){
                     String[] strArr = new String[10];
@@ -126,35 +129,41 @@ public class Main{
                     if(strRegione.equals(regione) && strProvincia.equals(province))
                         totaleCasi = Integer.parseInt(strArr[9]);
                 }
-            }
+            } */
         }catch(IOException e){
             e.printStackTrace();
         }
         return totaleCasi;
     }
 
-
     public static void main(String[] args) throws FileNotFoundException{
         System.out.println("file names in: [" +provinceDirectory.toString()+"]");
         FileHandler fHandler = new FileHandler();
-        ArrayList<File> fList = fHandler.getFileList();
+        Stack<File> fileStack = fHandler.getFileStack();
         ArrayList<Node> nList = new ArrayList<Node>();
-        String[] strLette = new String[1024];
         Tree t = new Tree();
+        
         try{
-            File prova = fList.get(1);
-            LocalDate dateOfProva = buildDate(fHandler.buildStringDate(prova.getName()));
-            t.insert(dateOfProva);
-            Node temp = t.get(dateOfProva);
-            //nList.add(temp);
-            String regione = regionReader(prova.getName(), "Lombardia");
-            String province = provinceFinder(prova.getName(), "Varese");
-            int totaleCasi = casiFinder(prova.getName(), regione, province);
-            temp.setNomeRegione(regione);
-            temp.setNomeProvincia(province);
-            temp.setTotaleCasi(totaleCasi);
+            for(File f : fileStack){
+                LocalDate dateFile = buildDate(fHandler.buildStringDate(f.getName()));
+                t.insert(dateFile);
+                nList.add(t.get(dateFile));
+            }
+            for(Node n : nList){
+                File f = fileStack.pop();
+                //System.out.println("Nodo: "+n.getDataNodo().toString());
+                String regione = regionReader(f.getName(), "Lombardia");
+                String provincia = provinceFinder(f.getName(), "Varese");
+                int totaleCasi = casiFinder(f.getName(), regione, provincia);
+                //System.out.println("here"+regione+provincia+totaleCasi);
+                n.setNomeRegione(regione);
+                n.setNomeProvincia(provincia);
+                n.setTotaleCasi(totaleCasi);
+            }
         }
         catch(IOException e){
+            e.printStackTrace();
+        }catch(NullPointerException e){
             e.printStackTrace();
         }
         t.traverseInOrder();

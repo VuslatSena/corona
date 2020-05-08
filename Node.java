@@ -83,7 +83,6 @@ public class Node{
         return null;
     }
 
-
     public void insert(LocalDate dataNodo){
         if(this.dataNodo == dataNodo)
             return;
@@ -105,8 +104,8 @@ public class Node{
     public void traverseInOrder(){
         if(leftNode != null)
             leftNode.traverseInOrder();
-        System.out.println(dataNodo.toString()+", "+"Regione: "+this.nomeRegione+"Provincia: "+this.getNomeProvincia()
-                +"totale casi: "+this.getTotaleCasi());
+        System.out.println(dataNodo.toString()+", "+" Regione: "+this.nomeRegione+" Provincia: "+this.getNomeProvincia()
+                +" totale casi: "+this.getTotaleCasi());
         if(rightNode != null)
             rightNode.traverseInOrder();
     }
